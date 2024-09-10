@@ -48,12 +48,16 @@ def get_product(product_id: int, db: Session = Depends(get_db)):
 def update_product(product_id: int, product: schemas.ProductUpdate, db: Session = Depends(get_db)):
     db_product = crud.update_product(
         db=db, product_id=product_id, product=product)
+    if not db_product:
+        raise HTTPException(status_code=404, detail="Product not found")
     return db_product
 
 
 @app.delete("/products/{product_id}", response_model=schemas.Product)
 def delete_product(product_id: int, db: Session = Depends(get_db)):
     db_product = crud.delete_product(db=db, product_id=product_id)
+    if not db_product:
+        raise HTTPException(status_code=404, detail="Product not found")
     return db_product
 
 
@@ -83,10 +87,14 @@ def get_category(category_id: int, db: Session = Depends(get_db)):
 def update_category(category_id: int, category: schemas.CategoryUpdate, db: Session = Depends(get_db)):
     db_category = crud.update_category(
         db=db, category_id=category_id, category=category)
+    if not db_category:
+        raise HTTPException(status_code=404, detail="Category not found")
     return db_category
 
 
 @app.delete("/categories/{category_id}", response_model=schemas.Category)
 def delete_category(category_id: int, db: Session = Depends(get_db)):
     db_category = crud.delete_category(db=db, category_id=category_id)
+    if not db_category:
+        raise HTTPException(status_code=404, detail="Category not found")
     return db_category
