@@ -10,5 +10,6 @@ To run tests:
 
 
 Go to http://127.0.0.1:8000/docs
+Create category first, or else you will get status code 500 on creating product without existing category
   
 
