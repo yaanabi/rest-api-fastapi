@@ -79,7 +79,7 @@ def get_category(category_id: int, db: Session = Depends(get_db)):
     return db_category
 
 
-@app.put("/categories/{category_id}", response_model=schemas.Category)
+@app.patch("/categories/{category_id}", response_model=schemas.Category)
 def update_category(category_id: int, category: schemas.CategoryUpdate, db: Session = Depends(get_db)):
     db_category = crud.update_category(
         db=db, category_id=category_id, category=category)

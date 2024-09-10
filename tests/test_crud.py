@@ -55,16 +55,6 @@ def setup_category(db_session):
     return category
 
 
-def test_create_category(db_session):
-    category_data = {
-        "name": "Test Category"
-    }
-    response = client.post("/categories/", json=category_data)
-    assert response.status_code == 201
-    data = response.json()
-    assert data["name"] == "Test Category"
-
-
 def test_create_product(db_session, setup_category):
     response = client.post(
         "/products/", json={"name": "test", "description": "test", "price": 1.0, "category_id": setup_category.id})
@@ -156,3 +146,54 @@ def test_get_products_after_delete(db_session, setup_category):
     assert response.json()[-1]["description"] == ""
     assert response.json()[-1]["price"] == 222
     assert response.json()[-1]["category_id"] != setup_category.id
+
+
+def test_create_category(db_session):
+    category_data = {
+        "name": "Test Category"
+    }
+    response = client.post("/categories/", json=category_data)
+    assert response.status_code == 201
+    data = response.json()
+    assert data["name"] == "Test Category"
+
+
+def test_get_category(db_session):
+    category = Category(name="Test2 Category")
+    db_session.add(category)
+    db_session.commit()
+    db_session.refresh(category)
+    response = client.get(f"/categories/{category.id}")
+    assert response.status_code == 200
+    assert response.json()["name"] == "Test2 Category"
+
+def test_update_category(db_session):
+    category = Category(name="Test3 Category")
+    db_session.add(category)
+    db_session.commit()
+    db_session.refresh(category)
+    response = client.patch(f"/categories/{category.id}", json={"name": "Updated Category"})
+    assert response.status_code == 200
+    assert response.json()["name"] == "Updated Category"
+
+def test_get_categories(db_session):
+    response = client.get("/categories/")
+    assert response.status_code == 200
+    assert len(response.json()) == 5
+    assert response.json()[-1]["name"] == "Updated Category"
+
+def test_delete_category(db_session):
+    category = Category(name="Deleted Category")
+    db_session.add(category)
+    db_session.commit()
+    db_session.refresh(category)
+    response = client.delete(f"/categories/{category.id}")
+    assert response.status_code == 200
+    assert response.json()["name"] == "Deleted Category"
+
+def test_get_after_delete_category(db_session):
+    response = client.get("/categories/")
+    assert response.status_code == 200
+    assert len(response.json()) == 5
+    assert response.json()[-1]["name"] == "Updated Category"
+

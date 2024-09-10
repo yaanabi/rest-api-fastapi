@@ -122,7 +122,7 @@ def get_category(db: Session, category_id: int) -> Optional[models.Category]:
     Returns:
         Optional[models.Category]: The category, or None if not found.
     """
-    return db.query(models.Category).get(category_id)
+    return db.query(models.Category).filter(models.Category.id == category_id).first()
 
 
 def get_categories(db: Session) -> List[models.Category]:
@@ -169,7 +169,8 @@ def update_category(db: Session, category_id: int, category: schemas.CategoryUpd
     Returns:
         Optional[models.Category]: The updated category, or None if not found.
     """
-    db_category = db.query(models.Category).get(category_id)
+    db_category = db.query(models.Category).filter(models.Category.id == category_id).first()
+   
     if db_category:
         for attr, value in category.model_dump(exclude_unset=True).items():
             setattr(db_category, attr, value)
@@ -190,7 +191,7 @@ def delete_category(db: Session, category_id: int) -> Optional[models.Category]:
     Returns:
         Optional[models.Category]: The deleted category, or None if not found.
     """
-    db_category = db.query(models.Category).get(category_id)
+    db_category = db.query(models.Category).filter(models.Category.id == category_id).first()
     if db_category:
         db.delete(db_category)
         db.commit()
